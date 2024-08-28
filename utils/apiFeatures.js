@@ -5,14 +5,19 @@ class APIFeatures {
   }
 
   filter() {
+    // Filtering: extract filters from query string
     const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach(el => delete queryObj[el]);
+    excludedFields.forEach((el) => delete queryObj[el]);
 
-    // 1B) Advanced filtering
+    // Advanced filtering
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    queryStr = queryStr.replace(
+      /\b(gt|gte|lt|lte|eq|ne)\b/g,
+      (match) => `$${match}`
+    ); // queryStr: { 'duration': { '$gte': '3' }}
 
+    // Build query
     this.query = this.query.find(JSON.parse(queryStr));
 
     return this;
@@ -20,9 +25,17 @@ class APIFeatures {
 
   sort() {
     if (this.queryString.sort) {
+      /**
+       * /api/v1/tours?sort=price,-ratingsAverage
+       * sorting the tours by "price" in ascending order
+       * "ratingsAverage" in descending order (denoted by the "-" before "ratingsAverage")
+       *
+       * equivalent - query.sort('price -ratingsAverage');
+       */
       const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
     } else {
+      // If sort field empty then results should be sorted in descending order to show the newest document first.
       this.query = this.query.sort('-createdAt');
     }
 
@@ -31,6 +44,12 @@ class APIFeatures {
 
   limitFields() {
     if (this.queryString.fields) {
+      /**
+       * /api/v1/tours?fields=name,duration,difficulty,price
+       * In this case, the response will only include the "name", "duration", "difficulty", and "price" fields, rather than returning all the fields of the tours resource.
+       *
+       * equivalent - query.select('name duration difficulty price');
+       */
       const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);
     } else {
@@ -50,4 +69,5 @@ class APIFeatures {
     return this;
   }
 }
+
 module.exports = APIFeatures;

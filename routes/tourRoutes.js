@@ -1,21 +1,20 @@
 const express = require('express');
-const tourController = require('./../controllers/tourController');
-const authController = require('./../controllers/authController');
-const reviewRouter = require('./../routes/reviewRoutes');
+const tourController = require('../controllers/tourController');
+const authController = require('../controllers/authController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
-// router.param('id', tourController.checkID);
-
-// POST /tour/234fad4/reviews
-// GET /tour/234fad4/reviews
-
+// POST /tours/273ab4/reviews
+// GET /tours/273ab4/reviews
 router.use('/:tourId/reviews', reviewRouter);
 
+// Alias
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTours, tourController.getAllTours);
 
+// Routes for aggregation operations
 router.route('/tour-stats').get(tourController.getTourStats);
 router
   .route('/monthly-plan/:year')
@@ -25,14 +24,16 @@ router
     tourController.getMonthlyPlan
   );
 
+// Geospatial queries routes
 router
   .route('/tours-within/:distance/center/:latlng/unit/:unit')
   .get(tourController.getToursWithin);
 // /tours-within?distance=233&center=-40,45&unit=mi
-// /tours-within/233/center/-40,45/unit/mi
+// /tours-within/233/center/-40,45/unit/mi and it looks nice
 
 router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
 
+// Implementing the "tours" routes
 router
   .route('/')
   .get(tourController.getAllTours)
