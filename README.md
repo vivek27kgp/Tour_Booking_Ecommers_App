@@ -2,7 +2,7 @@
   <br>
   <a href="https://natours-xbsh.onrender.com/"><img src="https://github.com/ritiksharmarj/natours/assets/54701022/326dd79a-8751-4d1d-883f-b302cf0461c5" alt="Natours" width="200"></a>
   <br>
-  Natours
+  Tour Booking App
   <br>
 </h1>
 
